@@ -30,4 +30,4 @@ build/
 
 ### Mac OS ###
 .DS_Store!/.idea/encodings.xml
-!/.idea/
+/.idea/**
