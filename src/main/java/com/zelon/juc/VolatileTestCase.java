@@ -97,5 +97,27 @@ public class VolatileTestCase {
         }
     }
 
+}
 
+class Singleton {
+    private volatile static Singleton instance;
+    private Singleton(){}
+
+    public static Singleton getInstance(){
+        if(instance == null){
+            synchronized(Singleton.class){
+                if(instance == null){
+                    /*
+                    由于对象创建的过程中分为两个过程，① 创建对象，分配内存，设置默认值 ② 初始化对象，
+                    下面的语句会产生3条指令，① 创建对象 ② 初始化对象 ③ 将对象地址赋值给 instance 变量
+                    这三条指令可能会发生指令重排：① -> ③ -> ②
+                    在高并发场景下，一个线程判断 instance != null ，则会直接获取并使用还没初始化的对象
+                    使用 volatile 就在指令 ③ 加上 lock 指令，设置内存屏障，前后指令都不能重排，保证了线程安全
+                     */
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
 }
