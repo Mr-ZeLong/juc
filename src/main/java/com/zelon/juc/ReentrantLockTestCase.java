@@ -27,6 +27,10 @@ synchronized 是 Java 关键字，由 JVM 通过 C++ 实现，ReentrantLock 是 
 除非不允许有少部分的线程饥饿问题或者每次线程获取锁后执行时间很长，
 不然从整体性能角度来讲，非公平锁在高并发场景下，吞吐量会更高，优先使用非公平锁
 
+ReentrantLock.lock() 原理？
+底层主要通过 AQS 实现锁的获取、同步
+
+
  */
 
 public class ReentrantLockTestCase {
