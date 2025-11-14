@@ -67,6 +67,7 @@ public class ReentrantLockTestCase {
         reentrantLock.lock();
         reentrantLock.lock();
         reentrantLock.unlock();
+
         System.out.println(reentrantLock.isLocked()); // true
         System.out.println(reentrantLock.isHeldByCurrentThread()); // true
         reentrantLock.unlock();
