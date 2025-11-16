@@ -63,7 +63,6 @@ public class ReentrantLockTestCase {
 
         System.out.println(reentrantLock.isLocked()); // false 判断锁是否被某一个线程持有
         System.out.println(reentrantLock.isHeldByCurrentThread()); // false 判断锁是否被当前线程持有
-
         reentrantLock.lock();
         reentrantLock.lock();
         reentrantLock.unlock();
