@@ -152,7 +152,6 @@ public class ReentrantLockTestCase {
     public void testFairLock(){
         reentrantLock = new ReentrantLock(true); // 设置为公平锁
         Runnable task = () -> {
-
             /*
             默认为非公平锁：
             t1 获取到锁
