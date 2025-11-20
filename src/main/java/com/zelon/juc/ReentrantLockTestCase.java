@@ -28,9 +28,31 @@ synchronized 是 Java 关键字，由 JVM 通过 C++ 实现，ReentrantLock 是 
 不然从整体性能角度来讲，非公平锁在高并发场景下，吞吐量会更高，优先使用非公平锁
 
 ReentrantLock.lock() 原理？
-底层主要通过 AQS 实现锁的获取、同步
+底层主要通过 AQS 同步器来实现的，
+公平锁使用公平同步器，非公平锁使用非公平同步器，
+①公平锁：不管当前同步器中的锁是否被获取（通过同步器中的 state == 0 判断），都会判断是否需要排序（阻塞队列是否有线程在等待），
+如果不需要排队，则通过 CAS 获取锁，否则通过 CAS 将线程加入到同步器的同步队列尾，然后 park(),
+队列中前一个线程释放锁后，会 unpark() 唤醒当前线程
+②非公平锁：不管有没有人排队，直接通过两次 CAS 获取锁(state)，
+如果获取不到则通过 CAS 将线程节点加入到同步器的阻塞队列尾，然后 park()
 
+AQS 同步器原理？
+AQS 内部组成：
+① 将线程封装为一个个节点（独占/共享），每个节点封装了线程信息，比如线程ID，线程状态，线程等待时间。
+   这些节点使用指针连接起来，串成一个双向同步队列。
+② 使用 state 标识锁资源，state == 0 表示锁可用，大于 0 表示 锁被获取的次数，实现可重入。
+③ 记录 独占锁 的持有线程
 
+AQS 是基于模板方法模式的，ReentrantLock，Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask 等
+皆是基于 AQS 实现的，通过实现以下方法，可以实现不同的同步器：
+isHeldExclusively()：该线程是否正在独占资源。只有用到 condition 才需要去实现它。
+tryAcquire(int)：独占方式。尝试获取资源，成功则返回 true，失败则返回 false。
+tryRelease(int)：独占方式。尝试释放资源，成功则返回 true，失败则返回 false。
+tryAcquireShared(int)：共享方式。尝试获取资源。负数表示失败；0 表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。
+tryReleaseShared(int)：共享方式。尝试释放资源，如果释放后允许唤醒后续等待结点返回 true，否则返回 false。
+这些方法都是 protected (并没有在 AQS 具体实现，而是直接抛出异常) 而不是 abstract 方法,
+这样子类只需要实现自己关心的抽象方法即可，不用全部实现一遍,
+比如 信号 Semaphore 只需要实现 tryAcquire 方法而不用实现其余不需要用到的模版方法：
  */
 
 public class ReentrantLockTestCase {
